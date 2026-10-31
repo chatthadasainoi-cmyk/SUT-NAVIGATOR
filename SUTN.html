@@ -1,0 +1,1625 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUT Navigator - Prototype</title>
+    <script src="/_sdk/element_sdk.js"></script>
+    <style>
+      body {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --sut-brown: #a4712a;
+        --sut-orange: #e4572e;
+        --bg-light: #f4f4f4;
+        --bg-panel: #ffffff;
+        --text-main: #222222;
+        --text-muted: #666666;
+        --border-soft: #dddddd;
+      }
+
+      * {
+        box-sizing: border-box;
+        font-family: 'Sarabun', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: linear-gradient(135deg, #e8dcc4 0%, #d4c5a9 100%);
+        color: var(--text-main);
+      }
+
+      /* ---------------- LOGIN SCREEN ---------------- */
+
+      .login-screen {
+        min-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at top, #fdf3e7, #d9d9d9);
+      }
+
+      .login-card {
+        width: 400px;
+        max-width: 90vw;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 32px 28px 36px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      }
+
+      .login-logo {
+        text-align: center;
+        font-size: 3.5rem;
+        margin-bottom: 12px;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .login-title {
+        text-align: center;
+        font-weight: 700;
+        font-size: 1.6rem;
+        margin-bottom: 6px;
+        color: var(--sut-brown);
+      }
+
+      .login-sub {
+        text-align: center;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 28px;
+      }
+
+      .login-field {
+        margin-bottom: 18px;
+      }
+
+      .login-label {
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+        color: var(--text-main);
+        font-weight: 500;
+        display: block;
+      }
+
+      .login-input {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 2px solid var(--border-soft);
+        font-size: 1rem;
+        transition: all 0.3s;
+      }
+
+      .login-input:focus {
+        outline: none;
+        border-color: var(--sut-brown);
+        box-shadow: 0 0 0 4px rgba(164, 113, 42, 0.15);
+      }
+
+      .login-button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 10px;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, var(--sut-brown), var(--sut-orange));
+        color: #fff;
+        font-weight: 600;
+        font-size: 1.05rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 12px rgba(164, 113, 42, 0.3);
+      }
+
+      .login-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(164, 113, 42, 0.4);
+      }
+
+      .login-button:active {
+        transform: translateY(0px);
+      }
+
+      .login-foot {
+        text-align: center;
+        margin-top: 16px;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      .login-foot .switch {
+        display: block;
+        margin-bottom: 4px;
+        cursor: pointer;
+        color: var(--sut-orange);
+        font-weight: 500;
+      }
+
+      .login-foot .switch:hover {
+        text-decoration: underline;
+      }
+
+      .login-foot .demo {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      /* ---------------- MAIN APP ---------------- */
+
+      .app {
+        max-width: 1200px;
+        margin: 0 auto;
+        min-height: 100%;
+        background: #fafafa;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 24px;
+        background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+        color: #f8f8f8;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      header .title {
+        font-weight: 700;
+        font-size: 1.3rem;
+        letter-spacing: 0.1em;
+      }
+
+      header .user {
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      header .logout-btn {
+        border: none;
+        padding: 8px 16px;
+        background: var(--sut-orange);
+        color: #fff;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      header .logout-btn:hover {
+        background: #d14520;
+        transform: scale(1.05);
+      }
+
+      .top-nav {
+        display: flex;
+        gap: 10px;
+        padding: 16px 24px;
+        background: #ffffff;
+        border-bottom: 2px solid #e0e0e0;
+      }
+
+      .top-nav button {
+        flex: 1;
+        padding: 12px;
+        border-radius: 10px;
+        border: 2px solid transparent;
+        background: #f5f5f5;
+        cursor: pointer;
+        font-size: 1.05rem;
+        font-weight: 600;
+        text-transform: lowercase;
+        transition: all 0.3s;
+        color: var(--text-main);
+      }
+
+      .top-nav button:hover {
+        background: #ebebeb;
+        transform: translateY(-2px);
+      }
+
+      .top-nav button.active {
+        background: var(--sut-brown);
+        color: #fff;
+        border-color: var(--sut-brown);
+        box-shadow: 0 4px 12px rgba(164, 113, 42, 0.3);
+      }
+
+      main {
+        padding: 24px;
+        flex: 1;
+        background: #fafafa;
+      }
+
+      .view {
+        display: none;
+        animation: fadeIn 0.4s ease-in;
+      }
+
+      .view.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h2 {
+        margin-top: 0;
+        margin-bottom: 24px;
+        font-size: 1.8rem;
+        color: var(--sut-brown);
+        font-weight: 700;
+      }
+
+      /* Home Grid */
+      .home-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .home-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+      }
+
+      .home-card {
+        background: linear-gradient(135deg, #ffffff, #f9f9f9);
+        border-radius: 16px;
+        padding: 28px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s;
+        border: 2px solid transparent;
+      }
+
+      .home-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border-color: var(--sut-brown);
+      }
+
+      .home-card-title {
+        font-weight: 700;
+        font-size: 1.3rem;
+        margin-bottom: 8px;
+        color: var(--sut-brown);
+      }
+
+      .home-card-sub {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+
+      .home-recommend {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .rec-title {
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-bottom: 16px;
+        text-transform: lowercase;
+        color: var(--sut-brown);
+      }
+
+      /* list ของ recommend ใช้การ์ดเดียวกับ search */
+      #home-recommend-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .home-map {
+        background: linear-gradient(135deg, #ffffff, #f9f9f9);
+        border-radius: 16px;
+        padding: 48px 24px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border: 2px dashed var(--border-soft);
+      }
+
+      .home-map-icon {
+        font-size: 4rem;
+        margin-bottom: 16px;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      /* Search Panel */
+      .search-panel {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .search-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+
+      .btn-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 2px solid var(--border-soft);
+        background: #ffffff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        transition: all 0.3s;
+        font-weight: 600;
+      }
+
+      .btn-circle:hover {
+        background: #f5f5f5;
+        border-color: var(--sut-brown);
+        transform: scale(1.1);
+      }
+
+      .search-title-bar {
+        flex: 1;
+        text-align: center;
+        font-weight: 700;
+        font-size: 1.3rem;
+        text-transform: lowercase;
+        color: var(--sut-brown);
+      }
+
+      .burger-icon {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .burger-icon span {
+        width: 20px;
+        height: 3px;
+        background: var(--text-main);
+        border-radius: 3px;
+        transition: all 0.3s;
+      }
+
+      .btn-circle:hover .burger-icon span {
+        background: var(--sut-brown);
+      }
+
+      .search-box-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f5f5f5;
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+      }
+
+      .search-box-row:focus-within {
+        border-color: var(--sut-brown);
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(164, 113, 42, 0.15);
+      }
+
+      .search-text-input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-size: 1rem;
+        outline: none;
+      }
+
+      .search-icon-btn {
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        font-size: 1.3rem;
+        transition: transform 0.3s;
+      }
+
+      .search-icon-btn:hover {
+        transform: scale(1.2);
+      }
+
+      .small-muted {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      #search-results {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .result-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        gap: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s;
+        border: 2px solid transparent;
+      }
+
+      .result-card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        border-color: var(--sut-brown);
+        transform: translateY(-2px);
+      }
+
+      .result-image {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #e0e0e0, #d0d0d0); /* กลับมาใช้ background */
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        flex-shrink: 0;
+        font-weight: 600;
+        overflow: hidden; /* **สำคัญ** เพิ่มตัวนี้เข้ามา */
+      }
+  
+
+      .result-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .result-name {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--text-main);
+      }
+
+      .result-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn-pill {
+        padding: 8px 18px;
+        border-radius: 999px;
+        border: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-pill:hover {
+        transform: scale(1.05);
+      }
+
+      .btn-info {
+        background: var(--sut-brown);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(164, 113, 42, 0.3);
+      }
+
+      .btn-info:hover {
+        background: #8d5f22;
+      }
+
+      .btn-location {
+        background: #f0f0f0;
+        color: var(--text-main);
+      }
+
+      .btn-location:hover {
+        background: #e0e0e0;
+      }
+
+      /* List Layout */
+      .list-layout {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 24px;
+      }
+
+      @media (max-width: 768px) {
+        .list-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .list-left {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        max-height: 80%;
+        overflow-y: auto;
+      }
+
+      .list-right {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .category-title {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--sut-brown);
+        margin-top: 20px;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--border-soft);
+      }
+
+      .category-title:first-child {
+        margin-top: 0;
+      }
+
+      .building-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 16px 0;
+      }
+
+      .building-list li {
+        padding: 12px 14px;
+        background: #f9f9f9;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.95rem;
+        font-weight: 500;
+        border: 2px solid transparent;
+      }
+
+      .building-list li:hover {
+        background: #f0f0f0;
+        transform: translateX(5px);
+        border-color: var(--sut-brown);
+      }
+
+      .building-list li.selected {
+        background: var(--sut-brown);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(164, 113, 42, 0.3);
+      }
+
+      #building-detail {
+        display: none;
+      }
+
+      #building-detail.active {
+        display: block;
+        animation: fadeIn 0.4s ease-in;
+      }
+
+      .detail-header {
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: var(--sut-brown);
+        padding-bottom: 12px;
+        border-bottom: 3px solid var(--sut-brown);
+      }
+
+      .floor-section {
+        margin-bottom: 20px;
+        padding: 16px;
+        background: #f9f9f9;
+        border-radius: 12px;
+      }
+
+      .floor-title {
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin-bottom: 12px;
+        color: var(--text-main);
+      }
+
+      .room-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .room-tag {
+        background: #ffffff;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: var(--text-main);
+        font-weight: 500;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s;
+      }
+
+      .room-tag:hover {
+        background: var(--sut-brown);
+        color: #ffffff;
+        transform: scale(1.05);
+      }
+
+      /* Report Styles */
+      .report-section {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .report-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 16px;
+      }
+
+      .report-table th {
+        text-align: left;
+        padding: 14px;
+        background: linear-gradient(135deg, #f5f5f5, #ebebeb);
+        font-weight: 700;
+        font-size: 0.9rem;
+        border-bottom: 3px solid var(--sut-brown);
+        color: var(--sut-brown);
+      }
+
+      .report-table td {
+        padding: 14px;
+        font-size: 0.95rem;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .report-table tr:hover {
+        background: #f9f9f9;
+      }
+
+      .pill {
+        background: linear-gradient(135deg, #f5f5f5, #ebebeb);
+        padding: 10px 20px;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-main);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      }
+    </style>
+    <style>
+      @view-transition {
+        navigation: auto;
+      }
+    </style>
+    <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+    <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+  </head>
+  <body>
+    <!-- Login Screen -->
+<div class="login-screen" id="loginScreen">
+   <div class="login-card">
+   <div class="login-logo">
+          <img 
+            src="SUT_emblem_standard.png" 
+            alt="SUT Logo" 
+            style="width: 100px; height: auto; display: block; margin: 0 auto;"
+          >
+        </div>
+         <div class="login-title">SUT Navigator</div>
+
+        <!-- LOGIN FORM -->
+        <form id="loginForm">
+          <div class="login-field">
+            <label for="username" class="login-label">ชื่อผู้ใช้หรืออีเมล</label>
+            <input
+              type="text"
+              id="username"
+              class="login-input"
+              placeholder="กรอกชื่อผู้ใช้หรืออีเมล"
+              autocomplete="username"
+              required
+            />
+          </div>
+          <div class="login-field">
+            <label for="password" class="login-label">รหัสผ่าน</label>
+            <input
+              type="password"
+              id="password"
+              class="login-input"
+              placeholder="กรอกรหัสผ่าน"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+          <button type="submit" class="login-button">เข้าสู่ระบบ</button>
+        </form>
+
+        <!-- REGISTER FORM -->
+        <form id="registerForm" class="hidden">
+          <div class="login-field">
+            <label for="regUsername" class="login-label">ชื่อผู้ใช้ (Username)</label>
+            <input
+              type="text"
+              id="regUsername"
+              class="login-input"
+              placeholder="ตั้งชื่อผู้ใช้ เช่น sut_freshy68"
+              autocomplete="username"
+              required
+            />
+          </div>
+          <div class="login-field">
+            <label for="regEmail" class="login-label">อีเมล</label>
+            <input
+              type="email"
+              id="regEmail"
+              class="login-input"
+              placeholder="กรอกอีเมลสำหรับติดต่อ"
+              autocomplete="email"
+              required
+            />
+          </div>
+          <div class="login-field">
+            <label for="regPassword" class="login-label">รหัสผ่าน</label>
+            <input
+              type="password"
+              id="regPassword"
+              class="login-input"
+              placeholder="ตั้งรหัสผ่านอย่างน้อย 8 ตัวอักษร"
+              minlength="8"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+          <div class="login-field">
+            <label for="regConfirmPassword" class="login-label">ยืนยันรหัสผ่าน</label>
+            <input
+              type="password"
+              id="regConfirmPassword"
+              class="login-input"
+              placeholder="พิมพ์รหัสผ่านอีกครั้ง"
+              minlength="8"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+          <button type="submit" class="login-button">สมัครสมาชิก</button>
+        </form>
+
+        <div class="login-foot">
+          <span id="toRegister" class="switch">ยังไม่มีบัญชี? สมัครสมาชิก</span>
+          <span id="toLogin" class="switch hidden">มีบัญชีแล้ว? กลับไปเข้าสู่ระบบ</span>
+          <div class="demo">
+            ระบบเข้าชม: หากท่านไม่ต้องการสมัคร สามารถเข้าสู่ระบบแบบทดลองได้ (ระบบไม่ตรวจสอบข้อมูลจริง)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="app hidden" id="mainApp">
+      <header>
+        <div class="title">SUT-NAVIGATOR</div>
+        <div class="user">
+          <span id="userDisplay">username</span>
+          <button class="logout-btn" id="logoutBtn">logout</button>
+        </div>
+      </header>
+      <nav class="top-nav">
+        <button class="active" data-view="home">home</button>
+        <button data-view="search">search</button>
+        <button data-view="list">list</button>
+        <button data-view="report">report</button>
+      </nav>
+      <main>
+        <!-- HOME / MAIN MENU -->
+        <section id="homeView" class="view active">
+          <h2>หน้าแรก</h2>
+          <div class="home-grid">
+            <div class="home-cards">
+              <div class="home-card" data-jump="search">
+                <div class="home-card-title">🔍 ค้นหา</div>
+                <div class="home-card-sub">ค้นหาอาคารและห้องเรียนในมหาวิทยาลัย</div>
+              </div>
+              <div class="home-card" data-jump="list">
+                <div class="home-card-title">📋 รายการ</div>
+                <div class="home-card-sub">ดูรายการอาคารทั้งหมดในระบบ</div>
+              </div>
+              <div class="home-card" data-jump="report">
+                <div class="home-card-title">📊 รายงาน</div>
+                <div class="home-card-sub">สถิติการใช้งานและยอดเข้าชม</div>
+              </div>
+            </div>
+
+            <!-- RECOMMEND ใช้การ์ดแบบเดียวกับ search -->
+            <div class="home-recommend">
+              <div class="rec-title">🌟 recommend</div>
+              <div id="home-recommend-list"></div>
+            </div>
+
+            <div class="home-map">
+              <div class="home-map-icon">🗺️</div>
+              <div style="color: var(--text-muted); font-size: 0.95rem">
+                แผนที่แบบโต้ตอบของมหาวิทยาลัยจะปรากฏในส่วนนี้ (mockup)
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SEARCH VIEW -->
+        <section id="searchView" class="view">
+          <h2>ค้นหา</h2>
+          <div class="search-panel">
+            <div class="search-header">
+              <button class="btn-circle" id="search-back-btn">←</button>
+              <div class="search-title-bar">search</div>
+              <button class="btn-circle">
+                <div class="burger-icon">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </button>
+            </div>
+            <div class="search-box-row">
+              <span>🔍</span>
+              <input
+                id="search-input"
+                class="search-text-input"
+                type="text"
+                placeholder="ค้นหาสถานที่..."
+              />
+              <button class="search-icon-btn" id="search-btn">🔍</button>
+            </div>
+            <div class="small-muted" style="margin-bottom: 16px">
+              แสดงตัวอย่างผลการค้นหา: อาคารเรียนรวม 1
+            </div>
+            <div id="search-results"></div>
+          </div>
+        </section>
+
+        <!-- LIST VIEW -->
+        <section id="listView" class="view">
+          <h2>รายการอาคาร</h2>
+          <div class="list-layout">
+            <div class="list-left">
+              <div class="category-title">🏫 อาคารเรียน</div>
+              <ul class="building-list" id="list-academic"></ul>
+              <div class="category-title">🍜 ร้านค้า/อาหาร</div>
+              <ul class="building-list" id="list-food"></ul>
+              <div class="category-title">🔧 อาคารบริการ/เครื่องมือ</div>
+              <ul class="building-list" id="list-service"></ul>
+            </div>
+            <div class="list-right">
+              <div
+                id="detail-placeholder"
+                class="small-muted"
+                style="
+                  text-align: center;
+                  padding: 40px 20px;
+                  color: var(--text-muted);
+                "
+              >
+                เลือกอาคารจากด้านซ้ายเพื่อดูชั้นและห้องเรียน
+              </div>
+              <div id="building-detail"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- REPORT VIEW -->
+        <section id="reportView" class="view">
+          <h2>รายงาน</h2>
+          <div class="report-section">
+            <div
+              style="
+                margin-bottom: 12px;
+                font-weight: 700;
+                font-size: 1.1rem;
+                color: var(--sut-brown);
+              "
+            >
+              📈 สถานที่ที่ถูกเปิดดูบ่อยที่สุด
+            </div>
+            <table class="report-table" id="report-table">
+              <thead>
+                <tr>
+                  <th>อันดับ</th>
+                  <th>อาคาร</th>
+                  <th>หมวดหมู่</th>
+                  <th>จำนวนครั้งที่เปิดดู</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="small-muted">
+              * ข้อมูลนี้อัปเดตจากการที่ผู้ใช้เปิดดูรายละเอียดอาคารในระบบ
+            </div>
+          </div>
+          <div class="report-section">
+            <div
+              style="
+                margin-bottom: 12px;
+                font-weight: 700;
+                font-size: 1.1rem;
+                color: var(--sut-brown);
+              "
+            >
+              📊 สรุปตามหมวดหมู่
+            </div>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap">
+              <span class="pill" id="summary-academic"></span>
+              <span class="pill" id="summary-food"></span>
+              <span class="pill" id="summary-service"></span>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const defaultConfig = {};
+
+      async function onConfigChange(config) {}
+
+      function mapToCapabilities(config) {
+        return {
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        };
+      }
+
+      function mapToEditPanelValues(config) {
+        return new Map();
+      }
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities,
+          mapToEditPanelValues
+        });
+      }
+
+      // -----------------------------
+      // LOGIN + REGISTER
+      // -----------------------------
+      const loginScreen = document.getElementById("loginScreen");
+      const mainApp = document.getElementById("mainApp");
+
+      const loginForm = document.getElementById("loginForm");
+      const loginUsername = document.getElementById("username");
+      const loginPassword = document.getElementById("password");
+
+      const registerForm = document.getElementById("registerForm");
+      const regUsername = document.getElementById("regUsername");
+      const regEmail = document.getElementById("regEmail");
+      const regPassword = document.getElementById("regPassword");
+      const regConfirmPassword = document.getElementById("regConfirmPassword");
+
+      const toRegister = document.getElementById("toRegister");
+      const toLogin = document.getElementById("toLogin");
+
+      const userDisplay = document.getElementById("userDisplay");
+      const logoutBtn = document.getElementById("logoutBtn");
+
+      const USERS_KEY = "sutNavigatorUsers";
+
+      function getUsers() {
+        try {
+          return JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+        } catch {
+          return [];
+        }
+      }
+
+      function saveUsers(users) {
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+      }
+
+      function showLoginForm() {
+        loginForm.classList.remove("hidden");
+        registerForm.classList.add("hidden");
+        toLogin.classList.add("hidden");
+        toRegister.classList.remove("hidden");
+      }
+
+      function showRegisterForm() {
+        registerForm.classList.remove("hidden");
+        loginForm.classList.add("hidden");
+        toRegister.classList.add("hidden");
+        toLogin.classList.remove("hidden");
+      }
+
+      toRegister.addEventListener("click", () => {
+        showRegisterForm();
+      });
+
+      toLogin.addEventListener("click", () => {
+        showLoginForm();
+      });
+
+      function proceedLogin(displayName) {
+        userDisplay.textContent = displayName || "นักศึกษา";
+        loginScreen.classList.add("hidden");
+        mainApp.classList.remove("hidden");
+      }
+
+      // สมัครสมาชิก
+      registerForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const username = regUsername.value.trim();
+        const email = regEmail.value.trim();
+        const pass = regPassword.value;
+        const confirmPass = regConfirmPassword.value;
+
+        if (!username || !email || !pass || !confirmPass) {
+          alert("กรอกข้อมูลให้ครบทุกช่อง");
+          return;
+        }
+
+        if (pass.length < 8) {
+          alert("รหัสผ่านควรมีอย่างน้อย 8 ตัวอักษร");
+          return;
+        }
+
+        if (pass !== confirmPass) {
+          alert("รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน");
+          return;
+        }
+
+        const users = getUsers();
+        const exists = users.find(
+          (u) => u.username === username || u.email === email
+        );
+        if (exists) {
+          alert("มีชื่อผู้ใช้หรืออีเมลนี้ในระบบอยู่แล้ว");
+          return;
+        }
+
+        users.push({ username, email, password: pass });
+        saveUsers(users);
+
+        alert("สมัครสมาชิกสำเร็จ! สามารถเข้าสู่ระบบได้เลย");
+        // กลับไปหน้า login และเติม username ให้
+        showLoginForm();
+        loginUsername.value = username;
+        loginPassword.value = "";
+        registerForm.reset();
+      });
+
+      // เข้าสู่ระบบ
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const identity = loginUsername.value.trim();
+        const pass = loginPassword.value;
+
+        if (!identity || !pass) {
+          alert("กรอกชื่อผู้ใช้/อีเมล และรหัสผ่านให้ครบ");
+          return;
+        }
+
+        const users = getUsers();
+        const found = users.find(
+          (u) =>
+            (u.username === identity || u.email === identity) &&
+            u.password === pass
+        );
+
+        if (found) {
+          proceedLogin(found.username);
+          loginForm.reset();
+          return;
+        }
+
+        const useDemo = confirm(
+          "ไม่พบบัญชีผู้ใช้นี้\nต้องการเข้าสู่ระบบแบบ Demo หรือไม่?"
+        );
+        if (useDemo) {
+          proceedLogin(identity || "นักศึกษา (demo)");
+          loginForm.reset();
+        }
+      });
+
+      // ออกจากระบบ
+      logoutBtn.addEventListener("click", () => {
+        mainApp.classList.add("hidden");
+        loginScreen.classList.remove("hidden");
+        loginForm.reset();
+        registerForm.reset();
+        showLoginForm();
+      });
+
+      // -----------------------------
+      // TAB NAVIGATION
+      // -----------------------------
+      const navButtons = document.querySelectorAll(".top-nav button");
+      const views = document.querySelectorAll(".view");
+
+      function switchView(viewKey) {
+        navButtons.forEach((b) =>
+          b.classList.toggle("active", b.dataset.view === viewKey)
+        );
+        views.forEach((v) =>
+          v.classList.toggle("active", v.id === viewKey + "View")
+        );
+        if (viewKey === "report") {
+          renderReport();
+        }
+      }
+
+      navButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          switchView(btn.dataset.view);
+        });
+      });
+
+      document.querySelectorAll(".home-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          const target = card.dataset.jump;
+          switchView(target);
+        });
+      });
+
+      document
+        .getElementById("search-back-btn")
+        .addEventListener("click", () => switchView("home"));
+
+      // -----------------------------
+      // DATA CLASSES
+      // -----------------------------
+      class Floor {
+        constructor(name, rooms) {
+          this.name = name;
+          this.rooms = rooms;
+        }
+      }
+
+      class Building {
+        constructor(id, name, category, keywordTags, floors = []) {
+          this.id = id;
+          this.name = name;
+          this.category = category;
+          this.keywordTags = keywordTags || [];
+          this.floors = floors;
+          this.viewCount = 0;
+        }
+      }
+
+      const buildings = [
+        new Building(
+          "AR1",
+          "อาคารเรียนรวม 1",
+          "academic",
+          ["รวม1", "lecture", "class"],
+          [
+            new Floor("ชั้น 1", ["ห้อง B1101", "ห้อง B1102", "ห้อง B1103"]),
+            new Floor("ชั้น 2", ["ห้อง B1201", "ห้อง B1202", "ห้อง B1203"]),
+            new Floor("โซนนอกฝั่ง U Store", ["ห้อง B2101", "ห้อง B2102", "ห้อง B2103"]),
+            new Floor("โซนนอกฝั่ง AIS", ["ห้อง B3101", "ห้อง B3102", "ห้อง B3103"]),
+            new Floor("ห้อง 1500 ที่นั่ง", ["ห้อง B4101"])
+          ]
+        ),
+        new Building(
+          "SS1",
+          "อาคารเรียนรวม 2",
+          "academic",
+          ["ss1", "lab", "science"],
+          [
+            new Floor("ห้อง 600 ที่นั่ง ชั้น 1", ["ห้อง B5101"]),
+            new Floor("ชั้น 2 ฝั่งตู้เซเว่น", ["ห้อง B5201", "ห้องB5202"]),
+            new Floor("ชั้น 2 ฝั่งลานจอดรถ", ["ห้อง B5206", "ห้อง B5207"])
+          ]
+        ),
+        new Building(
+          "SS2",
+          "อาคารรัฐสีมาคุณากร/Lab",
+          "academic",
+          ["ss2", "computer"],
+          [
+            new Floor("ชั้น 1 ฝั่งขวา", ["ห้อง B6101", "ห้อง B6102", "ห้อง B6103", "ห้อง B6104", "ห้อง B6105"]),
+            new Floor("ชั้น 1 ฝั่งซ้าย", ["ห้องคอมพิวเตอร์ 1", "ห้องคอมพิวเตอร์ 2"]),
+            new Floor("ชั้น 2 Digitech Lab 1-9", ["DIGITAL TECH LAB 01", "DIGITAL TECH LAB 02", "DIGITAL TECH LAB 03"]),
+            new Floor("ชั้น 3 Digitech Lab 10-15", ["DIGITAL TECH LAB 10", "DIGITAL TECH LAB 11", "DIGITAL TECH LAB 12"]),
+            new Floor("ชั้น 5 ", ["ห้อง B6501", "ห้อง B6102","ห้อง B6103",])
+          ]
+        ),
+        new Building(
+          "KSL",
+          "โรงอาหารกาสะลองคำ",
+          "food",
+          ["อาหาร", "ร้านข้าว", "food"],
+          [
+            new Floor("โซนอาหาร", [
+              "ร้านข้าวราดแกง",
+              "ร้านกาแฟ",
+              "ร้านก๋วยเตี๋ยว",
+              "ร้านขนมหวาน"
+            ])
+          ]
+        ),
+        new Building(
+          "CAF2",
+          "โรงอาหารเรียนรวม 2",
+          "food",
+          ["โรงอาหาร", "รวม2", "canteen"],
+          [
+            new Floor("โซนหลัก", [
+              "ร้านก๋วยเตี๋ยว",
+              "ร้านตามสั่ง",
+              "ร้านอาหารญี่ปุ่น",
+              "ร้านเครื่องดื่ม"
+            ])
+          ]
+        ),
+        new Building(
+          "LABC",
+          "ศูนย์เครื่องมือวิทยาศาสตร์",
+          "service",
+          ["lab", "เครื่องมือ", "research"],
+          [
+            new Floor("อาคารเครื่องมือ 1", ["F1"]),
+            new Floor("อาคารเครื่องมือ 2", ["F2"]),
+            new Floor("อาคารสุรพัฒน์ 2", ["หอประชุม"])
+          ]
+        )
+      ];
+
+// -----------------------------
+      // CARD FACTORY (ใช้ร่วมกันทั้ง Search + Recommend)
+      // -----------------------------
+      function createBuildingCard(b) {
+        const card = document.createElement("div");
+        card.className = "result-card";
+
+        const imgContainer = document.createElement("div");
+        imgContainer.className = "result-image";
+
+        let imageFileName = '';
+
+        if (b.id === "AR1") {
+          imageFileName = "image_8301a4.png";
+        } else if (b.id === "KSL") {
+          imageFileName = "image_4002s.png";
+        } else if (b.id === "CAF2") {
+          imageFileName = "image_2004c.png"; // **เพิ่มการใช้รูปภาพสำหรับ CAF2**
+        }
+
+        if (imageFileName) {
+          // ถ้ามีรูปภาพ
+          const image = document.createElement("img");
+          image.src = imageFileName; 
+          image.alt = b.name;
+          // CSS ในบรรทัดนี้จำเป็นเพื่อให้รูปเต็มกรอบ 80x80px
+          image.style.cssText = "width: 100%; height: 100%; object-fit: cover; border-radius: 8px;";
+          
+          // **สำคัญ:** ยกเลิกการใช้ background gradient ของ .result-image
+          imgContainer.style.background = 'none'; 
+          
+          imgContainer.appendChild(image);
+
+        } else {
+          // สำหรับอาคารอื่น ๆ ที่ไม่มีรูปภาพ (Placeholder)
+          imgContainer.textContent = "รูป";
+        }
+
+        const infoBox = document.createElement("div");
+        infoBox.className = "result-info";
+
+        const name = document.createElement("div");
+        name.className = "result-name";
+        name.textContent = b.name;
+
+        const actions = document.createElement("div");
+        actions.className = "result-actions";
+
+        const infoBtn = document.createElement("button");
+        infoBtn.className = "btn-pill btn-info";
+        infoBtn.textContent = "ข้อมูล";
+        infoBtn.addEventListener("click", () => {
+          switchView("list");
+          showBuildingDetail(b.id);
+        });
+
+        const locBtn = document.createElement("button");
+        locBtn.className = "btn-pill btn-location";
+        locBtn.textContent = "ตำแหน่ง";
+        locBtn.addEventListener("click", () => {
+          const msg = document.createElement("div");
+          msg.style.cssText =
+            "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:24px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.3);z-index:1000;text-align:center;min-width:300px;";
+          msg.innerHTML = `
+            <div style="margin-bottom:16px;font-size:1.05rem;font-weight:600;">
+              แสดงตำแหน่งจำลองของ:<br>${b.name}
+            </div>
+            <button style="padding:10px 24px;border:none;background:#a4712a;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;">
+              ปิด
+            </button>`;
+          document.body.appendChild(msg);
+          msg.querySelector("button").addEventListener("click", () =>
+            msg.remove()
+          );
+          setTimeout(() => msg.remove(), 3000);
+        });
+
+        actions.appendChild(infoBtn);
+        actions.appendChild(locBtn);
+
+        infoBox.appendChild(name);
+        infoBox.appendChild(actions);
+
+        card.appendChild(imgContainer); 
+        card.appendChild(infoBox);
+
+        return card;
+      }
+
+      // -----------------------------
+      // SEARCH VIEW
+      // -----------------------------
+      const searchInput = document.getElementById("search-input");
+      const searchBtn2 = document.getElementById("search-btn");
+      const searchResults = document.getElementById("search-results");
+
+      function renderSearchResults(list) {
+        searchResults.innerHTML = "";
+
+        if (!list.length) {
+          const info = document.createElement("div");
+          info.className = "small-muted";
+          info.style.textAlign = "center";
+          info.style.padding = "20px";
+          info.textContent = "ไม่พบอาคารที่ตรงกับคำค้น";
+          searchResults.appendChild(info);
+          return;
+        }
+
+        list.forEach((b) => {
+          searchResults.appendChild(createBuildingCard(b));
+        });
+      }
+
+      function performSearch() {
+        const q = searchInput.value.trim().toLowerCase();
+        if (!q) {
+          renderSearchResults(buildings.slice(0, 1));
+          return;
+        }
+
+        const matched = buildings.filter((b) => {
+          const nameMatch = b.name.toLowerCase().includes(q);
+          const tagMatch = b.keywordTags.some((t) =>
+            t.toLowerCase().includes(q)
+          );
+          return nameMatch || tagMatch;
+        });
+
+        renderSearchResults(matched);
+      }
+
+      searchBtn2.addEventListener("click", performSearch);
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") performSearch();
+      });
+
+      // -----------------------------
+      // HOME RECOMMEND
+      // -----------------------------
+      const recommendedIds = ["AR1", "KSL", "CAF2"]; // เลือกอาคารที่อยากแนะนำ
+
+      function renderHomeRecommend() {
+        const container = document.getElementById("home-recommend-list");
+        container.innerHTML = "";
+
+        recommendedIds.forEach((id) => {
+          const b = buildings.find((x) => x.id === id);
+          if (!b) return;
+          container.appendChild(createBuildingCard(b));
+        });
+      }
+
+      // -----------------------------
+      // LIST VIEW
+      // -----------------------------
+      function renderBuildingList() {
+        const listAcademic = document.getElementById("list-academic");
+        const listFood = document.getElementById("list-food");
+        const listService = document.getElementById("list-service");
+
+        listAcademic.innerHTML = "";
+        listFood.innerHTML = "";
+        listService.innerHTML = "";
+
+        buildings.forEach((b) => {
+          const li = document.createElement("li");
+          li.textContent = b.name;
+          li.addEventListener("click", () => showBuildingDetail(b.id));
+
+          if (b.category === "academic") listAcademic.appendChild(li);
+          else if (b.category === "food") listFood.appendChild(li);
+          else listService.appendChild(li);
+        });
+      }
+
+      function showBuildingDetail(id) {
+        const building = buildings.find((b) => b.id === id);
+        if (!building) return;
+
+        building.viewCount++;
+
+        document.querySelectorAll(".building-list li").forEach((li) => {
+          li.classList.remove("selected");
+        });
+
+        const selectedLi = Array.from(
+          document.querySelectorAll(".building-list li")
+        ).find((li) => li.textContent === building.name);
+        if (selectedLi) selectedLi.classList.add("selected");
+
+        const placeholder = document.getElementById("detail-placeholder");
+        placeholder.style.display = "none";
+
+        const container = document.getElementById("building-detail");
+        container.classList.add("active");
+        container.innerHTML = "";
+
+        const title = document.createElement("h3");
+        title.textContent = building.name;
+        title.className = "detail-header";
+        container.appendChild(title);
+
+        building.floors.forEach((floor) => {
+          const floorSection = document.createElement("div");
+          floorSection.className = "floor-section";
+
+          const floorTitle = document.createElement("div");
+          floorTitle.className = "floor-title";
+          floorTitle.textContent = floor.name;
+          floorSection.appendChild(floorTitle);
+
+          const roomTags = document.createElement("div");
+          roomTags.className = "room-tags";
+          floor.rooms.forEach((room) => {
+            const tag = document.createElement("span");
+            tag.className = "room-tag";
+            tag.textContent = room;
+            roomTags.appendChild(tag);
+          });
+          floorSection.appendChild(roomTags);
+
+          container.appendChild(floorSection);
+        });
+      }
+
+      // -----------------------------
+      // REPORT VIEW
+      // -----------------------------
+      function renderReport() {
+        const tbody = document.querySelector("#report-table tbody");
+        tbody.innerHTML = "";
+
+        const sorted = [...buildings].sort((a, b) => b.viewCount - a.viewCount);
+
+        sorted.forEach((b, index) => {
+          if (b.viewCount === 0) return;
+          const tr = document.createElement("tr");
+
+          const rankTd = document.createElement("td");
+          rankTd.textContent = index + 1;
+
+          const nameTd = document.createElement("td");
+          nameTd.textContent = b.name;
+
+          const catTd = document.createElement("td");
+          catTd.textContent =
+            b.category === "academic"
+              ? "อาคารเรียน"
+              : b.category === "food"
+              ? "ร้านค้า/อาหาร"
+              : "อาคารบริการ/เครื่องมือ";
+
+          const countTd = document.createElement("td");
+          countTd.textContent = b.viewCount;
+
+          tr.appendChild(rankTd);
+          tr.appendChild(nameTd);
+          tr.appendChild(catTd);
+          tr.appendChild(countTd);
+          tbody.appendChild(tr);
+        });
+
+        if (!tbody.children.length) {
+          const tr = document.createElement("tr");
+          const td = document.createElement("td");
+          td.colSpan = 4;
+          td.textContent =
+            "ยังไม่มีข้อมูลการใช้งาน (ลองเปิดดูรายละเอียดจากหน้า list ก่อน)";
+          td.className = "small-muted";
+          td.style.textAlign = "center";
+          td.style.padding = "20px";
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+        }
+
+        const summary = { academic: 0, food: 0, service: 0 };
+        buildings.forEach((b) => {
+          summary[b.category] += b.viewCount;
+        });
+
+        document.getElementById(
+          "summary-academic"
+        ).textContent = `🏫 อาคารเรียน: ${summary.academic} ครั้ง`;
+        document.getElementById(
+          "summary-food"
+        ).textContent = `🍜 ร้านค้า/อาหาร: ${summary.food} ครั้ง`;
+        document.getElementById(
+          "summary-service"
+        ).textContent = `🔧 บริการ/เครื่องมือ: ${summary.service} ครั้ง`;
+      }
+
+      // Initialize
+      renderBuildingList();
+      renderSearchResults(buildings.slice(0, 1));
+      renderHomeRecommend();
+      showLoginForm();
+    </script>
+  </body>
+</html>
